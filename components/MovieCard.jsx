@@ -4,6 +4,18 @@ import { View, Text, Image, StyleSheet } from "react-native";
 import { FontAwesome } from "@expo/vector-icons"; // Sử dụng icon ngôi sao
 
 const MovieCard = ({ movie }) => {
+  console.log(movie)
+
+  function formatNumber(num) {
+    if (num >= 1000) {
+      const suffixes = ['k', 'M', 'B', 'T']; // You can extend this as needed
+      const magnitude = Math.floor(Math.log10(num) / 3);
+      const formattedNum = (num / Math.pow(1000, magnitude)).toFixed(1); // One decimal place
+      return formattedNum + suffixes[magnitude - 1];
+    }
+    return num.toString(); // Return as-is if less than 1000
+  }
+
   return (
     <View style={styles.card}>
       {/* Poster */}
@@ -14,7 +26,9 @@ const MovieCard = ({ movie }) => {
         {/* Rating với ngôi sao màu vàng */}
         <View style={styles.ratingContainer}>
           <FontAwesome name="star" size={16} color="#FFD700" />
-          <Text style={styles.ratingText}>{movie.rating}</Text>
+          {/* <Text style={styles.ratingText}>{movie.rating}</Text> */}
+          <Text>{movie.rating.avg_rating.$numberDecimal}/10</Text>
+          <Text>({formatNumber(movie.rating.number_of_rating)} Ratings)</Text>
         </View>
 
         {/* Tên phim */}
@@ -36,13 +50,13 @@ const styles = StyleSheet.create({
     width: 160,
     marginRight: 16,
     borderRadius: 8,
-    overflow: "hidden",
+    // overflow: "hidden",
     backgroundColor: "#fff",
-    elevation: 3, // Đổ bóng trên Android
-    shadowColor: "#000", // Đổ bóng trên iOS
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.2,
-    shadowRadius: 4,
+    // elevation: 3, // Đổ bóng trên Android
+    // shadowColor: "#000", // Đổ bóng trên iOS
+    // shadowOffset: { width: 0, height: 2 },
+    // shadowOpacity: 0.2,
+    // shadowRadius: 4,
   },
   poster: {
     width: "100%",
@@ -57,6 +71,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "center",
     marginBottom: 4,
+    gap: 4
   },
   ratingText: {
     fontSize: 14,

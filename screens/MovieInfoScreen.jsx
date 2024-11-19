@@ -8,14 +8,15 @@ import {
   ScrollView,
   StyleSheet,
   Modal,
-  TouchableWithoutFeedback,
-  Button
+  TouchableWithoutFeedback
 } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import { WebView } from "react-native-webview";
 import { MovieContext } from "../contexts/MovieContext";
 import Loading from "../components/Loading"
 import { SafeAreaView } from "react-native-safe-area-context";
+import { FontAwesome } from "@expo/vector-icons"; // Sử dụng icon ngôi sao
+
 
 const MovieInfoScreen = ({ route, navigation }) => {
   const { movieId } = route.params;
@@ -45,6 +46,16 @@ const MovieInfoScreen = ({ route, navigation }) => {
 
   if (loadingMovie || loadingReviews) return <Loading />
   if (errorMovie || errorReviews) return <Text>Error loading movie details.</Text>;
+
+  function formatNumber(num) {
+    if (num >= 1000) {
+      const suffixes = ['k', 'M', 'B', 'T']; // You can extend this as needed
+      const magnitude = Math.floor(Math.log10(num) / 3);
+      const formattedNum = (num / Math.pow(1000, magnitude)).toFixed(1); // One decimal place
+      return formattedNum + suffixes[magnitude - 1];
+    }
+    return num.toString(); // Return as-is if less than 1000
+  }
 
   return (
     ( movie && 
@@ -83,7 +94,11 @@ const MovieInfoScreen = ({ route, navigation }) => {
               <Text style={styles.detail}>
                 Language: {movie.language}
               </Text>
-              <Text style={styles.rating}>⭐ {movie.rating}</Text>
+              <View style={{ flexDirection: "row", alignItems: "center", gap: 4 }}>
+                <FontAwesome name="star" size={16} color="#FFD700" />
+                <Text>{movie.rating.avg_rating.$numberDecimal}/10</Text>
+                <Text>({formatNumber(movie.rating.number_of_rating)} Ratings)</Text>
+              </View>
               <TouchableOpacity
                 style={styles.trailerButton}
                 onPress={toggleModal}
@@ -125,7 +140,11 @@ const MovieInfoScreen = ({ route, navigation }) => {
             <View
               style={{ flexDirection: "row", justifyContent: "space-between" }}
             >
-              <Text style={{ fontSize: 12 }}>⭐ 8.8/10 (1.9k Ratings)</Text>
+              <View style={{ flexDirection: "row", alignItems: "center", gap: 4 }}>
+                <FontAwesome name="star" size={16} color="#FFD700" />
+                <Text>{movie.rating.avg_rating.$numberDecimal}/10</Text>
+                <Text>({formatNumber(movie.rating.number_of_rating)} Ratings)</Text>
+              </View>
               <TouchableOpacity>
                 <Text style={{ color: "#b22222", fontWeight: "bold" }}>
                   Write a review
@@ -231,6 +250,7 @@ const styles = StyleSheet.create({
   movieDetails: {
     marginLeft: 16,
     flex: 1,
+    gap: 2,
   },
   movieTitle: {
     fontSize: 18,

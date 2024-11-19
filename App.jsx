@@ -15,15 +15,18 @@ import TicketConfirmationScreen from "./screens/TicketConfirmationScreen";
 import ProfileScreen from "./screens/ProfileScreen";
 import InvoiceScreen from "./screens/InvoiceScreen";
 import AccountInfoScreen from "./screens/AccountInfoScreen";
+import { DefaultTheme } from "@react-navigation/native";
 
 const Stack = createStackNavigator();
+const navTheme = DefaultTheme
+navTheme.colors.background = "#fff"
 
 export default function App() {
   return (
     <AuthProvider>
       <MoviesProvider>
         <MovieProvider>
-          <NavigationContainer>
+          <NavigationContainer theme={navTheme}>
             <Stack.Navigator
               initialRouteName="Login"
               screenOptions={{

@@ -1,6 +1,5 @@
 import React from "react";
 import {
-  SafeAreaView,
   View,
   Text,
   StyleSheet,
@@ -9,6 +8,7 @@ import {
 } from "react-native";
 import QRCode from "react-native-qrcode-svg"; // Import QR code library
 import { Ionicons } from "@expo/vector-icons"; // Import Ionicons for icons
+import { SafeAreaView } from "react-native-safe-area-context";
 
 const InvoiceScreen = ({ route, navigation }) => {
   const { movie, foodItems, grandTotal } = route.params;

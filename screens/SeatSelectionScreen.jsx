@@ -1,12 +1,12 @@
 import React, { useState } from "react";
 import {
-  SafeAreaView,
   StyleSheet,
   Text,
   View,
   TouchableOpacity,
   FlatList,
 } from "react-native";
+import { SafeAreaView } from "react-native-safe-area-context";
 import { Ionicons } from "@expo/vector-icons"; // Make sure to install @expo/vector-icons if you're using Expo
 
 const seats = Array.from({ length: 70 }, (_, i) => ({

@@ -1,5 +1,5 @@
 import React, { useRef, useEffect } from "react";
-import { View, TextInput, StyleSheet, TouchableOpacity } from "react-native";
+import { View, TextInput, StyleSheet, TouchableOpacity, Image } from "react-native";
 import Icon from "react-native-vector-icons/Ionicons";
 import { useNavigation } from "@react-navigation/native";
 
@@ -16,7 +16,7 @@ const Header = ({ searchQuery, onSearchChange }) => {
   return (
     <View style={styles.header}>
       <View style={styles.searchContainer}>
-        <Icon name="search" size={30} color="#888" />
+        <Icon name="search" size={24} color="#888" />
         <TextInput
           ref={searchInputRef}
           placeholder="Search by movie names"
@@ -27,7 +27,10 @@ const Header = ({ searchQuery, onSearchChange }) => {
         />
       </View>
       <TouchableOpacity onPress={() => navigation.navigate("Profile")}>
-        <Icon name="person-circle" size={40} color="#888" />
+        <Image 
+          source={require("../assets/user_icon.png")}
+          style={{ width: 28, height: 28 }}
+        />
       </TouchableOpacity>
     </View>
   );
@@ -40,6 +43,7 @@ const styles = StyleSheet.create({
     justifyContent: "space-between",
     padding: 10,
     backgroundColor: "#fff",
+    gap: 4
   },
   searchContainer: {
     flexDirection: "row",
