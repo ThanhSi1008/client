@@ -16,6 +16,7 @@ import ProfileScreen from "./screens/ProfileScreen";
 import InvoiceScreen from "./screens/InvoiceScreen";
 import AccountInfoScreen from "./screens/AccountInfoScreen";
 import { DefaultTheme } from "@react-navigation/native";
+import ReviewScreen from "./screens/ReviewScreen"
 
 const Stack = createStackNavigator();
 const navTheme = DefaultTheme
@@ -37,6 +38,7 @@ export default function App() {
               <Stack.Screen name="Login" component={LoginScreen} />
               <Stack.Screen name="SignUp" component={SignUpScreen} />
               <Stack.Screen name="MovieInfo" component={MovieInfoScreen} />
+              <Stack.Screen name="Review" component={ReviewScreen} />
               <Stack.Screen name="ShowTimes" component={ShowTimesScreen} />
               <Stack.Screen
                 name="SeatSelection"

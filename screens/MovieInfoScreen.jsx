@@ -145,7 +145,8 @@ const MovieInfoScreen = ({ route, navigation }) => {
                 <Text>{movie.rating.avg_rating.$numberDecimal}/10</Text>
                 <Text>({formatNumber(movie.rating.number_of_rating)} Ratings)</Text>
               </View>
-              <TouchableOpacity>
+              {/* open a modal */}
+              <TouchableOpacity onPress={() => {navigation.navigate("Review")}}>
                 <Text style={{ color: "#b22222", fontWeight: "bold" }}>
                   Write a review
                 </Text>
