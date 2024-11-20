@@ -14,7 +14,8 @@ const ProfileScreen = ({ navigation }) => {
   const user = {
     name: "John Doe",
     email: "johndoe@example.com",
-    profilePicture: "https://res.cloudinary.com/dlrtv3tla/image/upload/v1731542135/Tom_Hardy_by_Gage_Skidmore_lcpheo.jpg", // Replace with the correct path
+    profilePicture:
+      "https://res.cloudinary.com/dlrtv3tla/image/upload/v1731542135/Tom_Hardy_by_Gage_Skidmore_lcpheo.jpg", // Replace with the correct path
   };
 
   const recentBookings = [
@@ -34,22 +35,21 @@ const ProfileScreen = ({ navigation }) => {
 
   return (
     <SafeAreaView style={styles.container}>
+      {/* Header */}
+      <View style={styles.header}>
+        <TouchableOpacity onPress={() => navigation.goBack()}>
+          <Ionicons name="arrow-back" size={24} color="black" />
+        </TouchableOpacity>
+        <Text style={styles.headerTitle}>Profile</Text>
+      </View>
       <ScrollView>
-        {/* Header */}
-        <View style={styles.header}>
-          <TouchableOpacity onPress={() => navigation.goBack()}>
-            <Ionicons name="arrow-back" size={24} color="black" />
-          </TouchableOpacity>
-          <Text style={styles.headerTitle}>Profile</Text>
-        </View>
-
         {/* Account Information */}
         <View style={styles.section}>
           <Text style={styles.sectionTitle}>Account Information</Text>
           <TouchableOpacity onPress={() => navigation.navigate("AccountInfo")}>
             <View style={styles.accountInfoContainer}>
               <Image
-                source={{uri: user.profilePicture}}
+                source={{ uri: user.profilePicture }}
                 style={styles.profilePicture}
               />
               <View style={styles.accountDetails}>
@@ -88,18 +88,17 @@ const ProfileScreen = ({ navigation }) => {
             </View>
           ))}
         </View>
-
-        {/* Logout Button */}
-        <View style={styles.section}>
-          <TouchableOpacity
-            onPress={() => navigation.navigate("Login")}
-            style={styles.logoutButton}
-          >
-            <Text style={styles.logoutButtonText}>Logout</Text>
-            <Ionicons name="log-out" size={20} color="gray" />
-          </TouchableOpacity>
-        </View>
       </ScrollView>
+      {/* Logout Button */}
+      <View style={styles.section}>
+        <TouchableOpacity
+          onPress={() => navigation.navigate("Login")}
+          style={styles.logoutButton}
+        >
+          <Text style={styles.logoutButtonText}>Logout</Text>
+          <Ionicons name="log-out" size={20} color="gray" />
+        </TouchableOpacity>
+      </View>
     </SafeAreaView>
   );
 };
@@ -112,7 +111,7 @@ const styles = StyleSheet.create({
   header: {
     flexDirection: "row",
     alignItems: "center",
-    padding: 16,
+    padding: 12,
   },
   headerTitle: {
     fontSize: 20,
@@ -121,9 +120,8 @@ const styles = StyleSheet.create({
   },
   section: {
     backgroundColor: "#fff",
-    padding: 16,
-    marginVertical: 8,
-    borderRadius: 8,
+    padding: 12,
+    marginBottom: 8,
   },
   sectionTitle: {
     fontSize: 18,
@@ -182,13 +180,10 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     justifyContent: "space-between",
     alignItems: "center",
-    paddingVertical: 12,
-    borderBottomWidth: 1,
-    borderBottomColor: "#e0e0e0",
   },
   logoutButtonText: {
     fontSize: 16,
-    color: "red", // Màu sắc nổi bật cho nút Logout
+    color: "red",
   },
 });
 
