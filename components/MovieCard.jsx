@@ -4,7 +4,6 @@ import { View, Text, Image, StyleSheet } from "react-native";
 import { FontAwesome } from "@expo/vector-icons"; // Sử dụng icon ngôi sao
 
 const MovieCard = ({ movie }) => {
-  console.log(movie)
 
   function formatNumber(num) {
     if (num >= 1000) {

@@ -16,11 +16,12 @@ import ProfileScreen from "./screens/ProfileScreen";
 import InvoiceScreen from "./screens/InvoiceScreen";
 import AccountInfoScreen from "./screens/AccountInfoScreen";
 import { DefaultTheme } from "@react-navigation/native";
-import ReviewScreen from "./screens/ReviewScreen"
+import ReviewScreen from "./screens/ReviewScreen";
+import Toast from "react-native-toast-message";
 
 const Stack = createStackNavigator();
-const navTheme = DefaultTheme
-navTheme.colors.background = "#fff"
+const navTheme = DefaultTheme;
+navTheme.colors.background = "#fff";
 
 export default function App() {
   return (
@@ -53,6 +54,7 @@ export default function App() {
               <Stack.Screen name="Invoice" component={InvoiceScreen} />
               <Stack.Screen name="AccountInfo" component={AccountInfoScreen} />
             </Stack.Navigator>
+            <Toast />
           </NavigationContainer>
         </MovieProvider>
       </MoviesProvider>

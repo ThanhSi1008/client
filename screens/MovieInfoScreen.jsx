@@ -8,15 +8,14 @@ import {
   ScrollView,
   StyleSheet,
   Modal,
-  TouchableWithoutFeedback
+  TouchableWithoutFeedback,
 } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import { WebView } from "react-native-webview";
 import { MovieContext } from "../contexts/MovieContext";
-import Loading from "../components/Loading"
+import Loading from "../components/Loading";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { FontAwesome } from "@expo/vector-icons"; // Sử dụng icon ngôi sao
-
 
 const MovieInfoScreen = ({ route, navigation }) => {
   const { movieId } = route.params;
@@ -44,12 +43,13 @@ const MovieInfoScreen = ({ route, navigation }) => {
     setModalVisible(!isModalVisible);
   };
 
-  if (loadingMovie || loadingReviews) return <Loading />
-  if (errorMovie || errorReviews) return <Text>Error loading movie details.</Text>;
+  if (loadingMovie || loadingReviews) return <Loading />;
+  if (errorMovie || errorReviews)
+    return <Text>Error loading movie details.</Text>;
 
   function formatNumber(num) {
     if (num >= 1000) {
-      const suffixes = ['k', 'M', 'B', 'T']; // You can extend this as needed
+      const suffixes = ["k", "M", "B", "T"]; // You can extend this as needed
       const magnitude = Math.floor(Math.log10(num) / 3);
       const formattedNum = (num / Math.pow(1000, magnitude)).toFixed(1); // One decimal place
       return formattedNum + suffixes[magnitude - 1];
@@ -58,162 +58,169 @@ const MovieInfoScreen = ({ route, navigation }) => {
   }
 
   return (
-    ( movie && 
-    <SafeAreaView style={styles.container}>
-      <View style={styles.subContainer}>
-        <View style={styles.header}>
-          <TouchableOpacity onPress={() => navigation.goBack()}>
-            <Ionicons name="arrow-back" size={24} color="black" />
-          </TouchableOpacity>
-          <Text style={styles.headerText}>Movie Info</Text>
-        </View>
-
-        <ScrollView
-          style={styles.scrollContainer}
-          showsVerticalScrollIndicator={false}
-        >
-          <View style={styles.movieInfo}>
-            <Image
-              style={styles.poster}
-              source={{
-                uri: movie.movie_poster,
-              }}
-            />
-            <View style={styles.movieDetails}>
-              <Text style={styles.movieTitle}>
-                {movie.movie_name}
-              </Text>
-              <Text style={styles.genre}>{movie.genre}</Text>
-              <Text style={styles.detail}>
-                Release Date:{" "}
-                {new Date(movie.release_date).toDateString()}
-              </Text>
-              <Text style={styles.detail}>
-                Duration: {movie.duration} minutes
-              </Text>
-              <Text style={styles.detail}>
-                Language: {movie.language}
-              </Text>
-              <View style={{ flexDirection: "row", alignItems: "center", gap: 4 }}>
-                <FontAwesome name="star" size={16} color="#FFD700" />
-                <Text>{movie.rating.avg_rating.$numberDecimal}/10</Text>
-                <Text>({formatNumber(movie.rating.number_of_rating)} Ratings)</Text>
-              </View>
-              <TouchableOpacity
-                style={styles.trailerButton}
-                onPress={toggleModal}
-              >
-                <Text style={styles.trailerButtonText}>▶ Trailer</Text>
-              </TouchableOpacity>
-            </View>
+    movie && (
+      <SafeAreaView style={styles.container}>
+        <View style={styles.subContainer}>
+          <View style={styles.header}>
+            <TouchableOpacity onPress={() => navigation.goBack()}>
+              <Ionicons name="arrow-back" size={24} color="black" />
+            </TouchableOpacity>
+            <Text style={styles.headerText}>Movie Info</Text>
           </View>
 
-          <View style={styles.section}>
-            <Text style={styles.sectionTitle}>Overview</Text>
-            <Text style={styles.overviewText}>
-              {movie.description}
-            </Text>
-          </View>
-
-          <View style={styles.section}>
-            <Text style={styles.sectionTitle}>Casts</Text>
-            <FlatList
-              horizontal
-              data={movie.casts}
-              keyExtractor={(item, index) => item.person_id || `${index}`}
-              renderItem={({ item }) => (
-                <View style={styles.castItem}>
-                  <Image
-                    style={styles.castImage}
-                    source={{ uri: item.avatar }}
-                  />
-                  <Text style={styles.castName}>{item.person_name}</Text>
-                  <Text style={styles.castRole}>{item.character_name}</Text>
-                </View>
-              )}
-              showsHorizontalScrollIndicator={false}
-            />
-          </View>
-
-          <View style={{ gap: 8 }}>
-            <Text style={{ fontSize: 18, fontWeight: "bold" }}>Review</Text>
-            <View
-              style={{ flexDirection: "row", justifyContent: "space-between" }}
-            >
-              <View style={{ flexDirection: "row", alignItems: "center", gap: 4 }}>
-                <FontAwesome name="star" size={16} color="#FFD700" />
-                <Text>{movie.rating.avg_rating.$numberDecimal}/10</Text>
-                <Text>({formatNumber(movie.rating.number_of_rating)} Ratings)</Text>
-              </View>
-              {/* open a modal */}
-              <TouchableOpacity onPress={() => {navigation.navigate("Review")}}>
-                <Text style={{ color: "#b22222", fontWeight: "bold" }}>
-                  Write a review
-                </Text>
-              </TouchableOpacity>
-            </View>
-
-            <FlatList
-              contentContainerStyle={{ gap: 6 }}
-              scrollEnabled={false}
-              data={reviews}
-              keyExtractor={(item, index) => `${index}`}
-              renderItem={({ item }) => (
-                <View
-                  style={{
-                    backgroundColor: "#eee",
-                    padding: 12,
-                    borderRadius: 8,
-                    gap: 8,
-                  }}
-                >
-                  <Text style={{ padding: 0, fontWeight: "bold" }}>
-                    {item.user.full_name}
-                  </Text>
-                  <Text style={{ fontSize: 12 }}>
-                    ⭐ {item.rating}/10 - Masterpiece
-                  </Text>
-                  <Text style={{ fontSize: 12 }}>{item.comment}</Text>
-                </View>
-              )}
-            />
-          </View>
-        </ScrollView>
-
-        <Modal
-          visible={isModalVisible}
-          onRequestClose={toggleModal}
-          animationType="slide"
-          transparent={true}
-        >
-          <TouchableWithoutFeedback
-          // onPress={toggleModal}
+          <ScrollView
+            style={styles.scrollContainer}
+            showsVerticalScrollIndicator={false}
           >
-            <View style={styles.modalContainer}>
-              <View style={styles.modalContent}>
+            <View style={styles.movieInfo}>
+              <Image
+                style={styles.poster}
+                source={{
+                  uri: movie.movie_poster,
+                }}
+              />
+              <View style={styles.movieDetails}>
+                <Text style={styles.movieTitle}>{movie.movie_name}</Text>
+                <Text style={styles.genre}>{movie.genre}</Text>
+                <Text style={styles.detail}>
+                  Release Date: {new Date(movie.release_date).toDateString()}
+                </Text>
+                <Text style={styles.detail}>
+                  Duration: {movie.duration} minutes
+                </Text>
+                <Text style={styles.detail}>Language: {movie.language}</Text>
+                <View
+                  style={{ flexDirection: "row", alignItems: "center", gap: 4 }}
+                >
+                  <FontAwesome name="star" size={16} color="#FFD700" />
+                  <Text>{movie.rating.avg_rating.$numberDecimal}/10</Text>
+                  <Text>
+                    ({formatNumber(movie.rating.number_of_rating)} Ratings)
+                  </Text>
+                </View>
                 <TouchableOpacity
-                  style={styles.closeButton}
+                  style={styles.trailerButton}
                   onPress={toggleModal}
                 >
-                  <Ionicons name="close" size={40} color="white" />
+                  <Text style={styles.trailerButtonText}>▶ Trailer</Text>
                 </TouchableOpacity>
-                <WebView
-                  source={{ uri: movie.trailer_link }}
-                  style={styles.webviewPlayer}
-                />
               </View>
             </View>
-          </TouchableWithoutFeedback>
-        </Modal>
-        <TouchableOpacity
-          style={styles.getTicketsButton}
-          onPress={() => navigation.navigate("ShowTimes")}
-        >
-          <Text style={styles.getTicketsText}>Get Tickets</Text>
-        </TouchableOpacity>
-      </View>
-    </SafeAreaView>)
-    
+
+            <View style={styles.section}>
+              <Text style={styles.sectionTitle}>Overview</Text>
+              <Text style={styles.overviewText}>{movie.description}</Text>
+            </View>
+
+            <View style={styles.section}>
+              <Text style={styles.sectionTitle}>Casts</Text>
+              <FlatList
+                horizontal
+                data={movie.casts}
+                keyExtractor={(item, index) => item.person_id || `${index}`}
+                renderItem={({ item }) => (
+                  <View style={styles.castItem}>
+                    <Image
+                      style={styles.castImage}
+                      source={{ uri: item.avatar }}
+                    />
+                    <Text style={styles.castName}>{item.person_name}</Text>
+                    <Text style={styles.castRole}>{item.character_name}</Text>
+                  </View>
+                )}
+                showsHorizontalScrollIndicator={false}
+              />
+            </View>
+
+            <View style={{ gap: 8 }}>
+              <Text style={{ fontSize: 18, fontWeight: "bold" }}>Review</Text>
+              <View
+                style={{
+                  flexDirection: "row",
+                  justifyContent: "space-between",
+                }}
+              >
+                <View
+                  style={{ flexDirection: "row", alignItems: "center", gap: 4 }}
+                >
+                  <FontAwesome name="star" size={16} color="#FFD700" />
+                  <Text>{movie.rating.avg_rating.$numberDecimal}/10</Text>
+                  <Text>
+                    ({formatNumber(movie.rating.number_of_rating)} Ratings)
+                  </Text>
+                </View>
+                <TouchableOpacity
+                  onPress={() => {
+                    navigation.navigate("Review", { movie: movie });
+                  }}
+                >
+                  <Text style={{ color: "#b22222", fontWeight: "bold" }}>
+                    Write a review
+                  </Text>
+                </TouchableOpacity>
+              </View>
+
+              <FlatList
+                contentContainerStyle={{ gap: 6 }}
+                scrollEnabled={false}
+                data={reviews}
+                keyExtractor={(item, index) => `${index}`}
+                renderItem={({ item }) => (
+                  <View
+                    style={{
+                      backgroundColor: "#eee",
+                      padding: 12,
+                      borderRadius: 8,
+                      gap: 8,
+                    }}
+                  >
+                    <Text style={{ padding: 0, fontWeight: "bold" }}>
+                      {item.user.full_name}
+                    </Text>
+                    <Text style={{ fontSize: 12 }}>
+                      ⭐ {item.rating}/10 - Masterpiece
+                    </Text>
+                    <Text style={{ fontSize: 12 }}>{item.comment}</Text>
+                  </View>
+                )}
+              />
+            </View>
+          </ScrollView>
+
+          <Modal
+            visible={isModalVisible}
+            onRequestClose={toggleModal}
+            animationType="slide"
+            transparent={true}
+          >
+            <TouchableWithoutFeedback
+            // onPress={toggleModal}
+            >
+              <View style={styles.modalContainer}>
+                <View style={styles.modalContent}>
+                  <TouchableOpacity
+                    style={styles.closeButton}
+                    onPress={toggleModal}
+                  >
+                    <Ionicons name="close" size={40} color="white" />
+                  </TouchableOpacity>
+                  <WebView
+                    source={{ uri: movie.trailer_link }}
+                    style={styles.webviewPlayer}
+                  />
+                </View>
+              </View>
+            </TouchableWithoutFeedback>
+          </Modal>
+          <TouchableOpacity
+            style={styles.getTicketsButton}
+            onPress={() => navigation.navigate("ShowTimes")}
+          >
+            <Text style={styles.getTicketsText}>Get Tickets</Text>
+          </TouchableOpacity>
+        </View>
+      </SafeAreaView>
+    )
   );
 };
 
