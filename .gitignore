@@ -1,9 +1,7 @@
 # Bỏ qua tất cả thư mục node_modules
 node_modules/
 
-# Nếu có thêm các file cần bỏ qua trong client hoặc server:
-client/node_modules/
-server/node_modules/
+server/
 
 # Các file khác không cần thiết
 *.log
