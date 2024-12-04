@@ -1,8 +1,14 @@
-client/node_modules/
-client/.expo
-client/.DS_Store
+# Bỏ qua tất cả thư mục node_modules
+node_modules/
 
-server/.vercel
+# Nếu có thêm các file cần bỏ qua trong client hoặc server:
+client/node_modules/
 server/node_modules/
-server/.DS_Store
-server/.env
+
+# Các file khác không cần thiết
+*.log
+.DS_Store
+.env
+.vscode/
+build/
+dist/
