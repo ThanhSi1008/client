@@ -18,47 +18,51 @@ import AccountInfoScreen from "./screens/AccountInfoScreen";
 import { DefaultTheme } from "@react-navigation/native";
 import ReviewScreen from "./screens/ReviewScreen";
 import PaymentMethodsScreen from "./screens/PaymentMethodsScreen";
+import { ScreeningProvider } from "./contexts/ScreeningContext"
+import { SeatProductProvider } from "./contexts/SeatProductContext"
 
 const Stack = createStackNavigator();
-const navTheme = DefaultTheme;
-navTheme.colors.background = "#fff";
 
 export default function App() {
   return (
     <AuthProvider>
       <MoviesProvider>
         <MovieProvider>
-          <NavigationContainer theme={navTheme}>
-            <Stack.Navigator
-              initialRouteName="Login"
-              screenOptions={{
-                headerShown: false,
-              }}
-            >
-              <Stack.Screen name="Home" component={HomeScreen} />
-              <Stack.Screen name="Login" component={LoginScreen} />
-              <Stack.Screen name="SignUp" component={SignUpScreen} />
-              <Stack.Screen name="MovieInfo" component={MovieInfoScreen} />
-              <Stack.Screen name="Review" component={ReviewScreen} />
-              <Stack.Screen name="ShowTimes" component={ShowTimesScreen} />
-              <Stack.Screen
-                name="SeatSelection"
-                component={SeatSelectionScreen}
-              />
-              <Stack.Screen name="Product" component={ProductScreen} />
-              <Stack.Screen
-                name="TicketConfirmation"
-                component={TicketConfirmationScreen}
-              />
-              <Stack.Screen name="Profile" component={ProfileScreen} />
-              <Stack.Screen name="Invoice" component={InvoiceScreen} />
-              <Stack.Screen name="AccountInfo" component={AccountInfoScreen} />
-              <Stack.Screen
-                name="PaymentMethod"
-                component={PaymentMethodsScreen}
-              />
-            </Stack.Navigator>
-          </NavigationContainer>
+          <ScreeningProvider>
+            <SeatProductProvider>
+              <NavigationContainer>
+                <Stack.Navigator
+                  initialRouteName="Login"
+                  screenOptions={{
+                    headerShown: false,
+                  }}
+                >
+                  <Stack.Screen name="Home" component={HomeScreen} />
+                  <Stack.Screen name="Login" component={LoginScreen} />
+                  <Stack.Screen name="SignUp" component={SignUpScreen} />
+                  <Stack.Screen name="MovieInfo" component={MovieInfoScreen} />
+                  <Stack.Screen name="Review" component={ReviewScreen} />
+                  <Stack.Screen name="ShowTimes" component={ShowTimesScreen} />
+                  <Stack.Screen
+                    name="SeatSelection"
+                    component={SeatSelectionScreen}
+                  />
+                  <Stack.Screen name="Product" component={ProductScreen} />
+                  <Stack.Screen
+                    name="TicketConfirmation"
+                    component={TicketConfirmationScreen}
+                  />
+                  <Stack.Screen name="Profile" component={ProfileScreen} />
+                  <Stack.Screen name="Invoice" component={InvoiceScreen} />
+                  <Stack.Screen name="AccountInfo" component={AccountInfoScreen} />
+                  <Stack.Screen
+                    name="PaymentMethod"
+                    component={PaymentMethodsScreen}
+                  />
+                </Stack.Navigator>
+              </NavigationContainer>
+            </SeatProductProvider>
+          </ScreeningProvider>
         </MovieProvider>
       </MoviesProvider>
     </AuthProvider>

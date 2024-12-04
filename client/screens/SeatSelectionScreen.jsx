@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import {
   StyleSheet,
   Text,
@@ -7,41 +7,61 @@ import {
   FlatList,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { Ionicons } from "@expo/vector-icons"; // Make sure to install @expo/vector-icons if you're using Expo
+import { Ionicons } from "@expo/vector-icons"; 
+import ScreeningContext from "../contexts/ScreeningContext"
+import { MovieContext } from "../contexts/MovieContext"
+import SeatProductContext from "../contexts/SeatProductContext"
 
-const seats = Array.from({ length: 70 }, (_, i) => ({
-  id: `A${String(i + 1).padStart(2, "0")}`,
-  status: i % 15 === 0 ? "occupied" : "available",
-}));
+function formatTime(dateString) {
+  const date = new Date(dateString);
+  if (isNaN(date)) {
+    throw new Error("Invalid date string");
+  }
+  const hours = String(date.getUTCHours()).padStart(2, "0");
+  const minutes = String(date.getUTCMinutes()).padStart(2, "0");
+  return `${hours}:${minutes}`;
+}
 
-const SeatSelectionScreen = ({ navigation }) => {
-  const [selectedSeats, setSelectedSeats] = useState([]);
-  const ticketPrice = 59;
+function getDayOfWeek(dateString) {
+  const daysOfWeek = ["SUN", "MON", "TUE", "WED", "THU", "FRI", "SAT"];
+  const date = new Date(dateString);
+  return daysOfWeek[date.getUTCDay()]; // Get the day of the week in UTC
+}
 
-  const toggleSeat = (seatId) => {
-    setSelectedSeats((prevSelectedSeats) =>
-      prevSelectedSeats.includes(seatId)
-        ? prevSelectedSeats.filter((id) => id !== seatId)
-        : [...prevSelectedSeats, seatId]
-    );
+function getFormattedDate(dateString) {
+  const date = new Date(dateString);
+  const day = String(date.getUTCDate()).padStart(2, "0");
+  const month = String(date.getUTCMonth() + 1).padStart(2, "0");
+  const year = date.getUTCFullYear();
+  return `${day}/${month}/${year}`; // Format as DD/MM/YYYY
+}
+
+
+const SeatSelectionScreen = ({ route, navigation }) => { 
+  const { screenings } = useContext(ScreeningContext)
+  const { movie } = useContext(MovieContext)
+  const { theater_name } = route.params;
+
+  const { seatProduct, dispatchSeatProduct } = useContext(SeatProductContext)
+  const { seats: selectedSeats } = seatProduct
+  // const [selectedSeats, setSelectedSeats] = useState([]);
+  const ticketPrice = screenings.screening.ticket_price;
+
+  const toggleSeat = (seatLocation) => {
+    dispatchSeatProduct({ type: "SET_SEATS", payload: selectedSeats.includes(seatLocation) ? selectedSeats.filter((location) => location !== seatLocation) : [...selectedSeats, seatLocation] })
+    // setSelectedSeats((prevSelectedSeats) => prevSelectedSeats.includes(seatLocation) ? prevSelectedSeats.filter((location) => location !== seatLocation) : [...prevSelectedSeats, seatLocation] );
   };
 
-  const renderSeat = ({ item }) => {
-    const isSelected = selectedSeats.includes(item.id);
-    const seatStyle =
-      item.status === "occupied"
-        ? styles.occupiedSeat
-        : isSelected
-        ? styles.selectedSeat
-        : styles.availableSeat;
-
+  const renderSeat = ({ item: seat }) => {
+    const isSelected = selectedSeats.includes(seat.seat_location);
+    const seatStyle = seat.status === false ? styles.occupiedSeat : isSelected ? styles.selectedSeat : styles.availableSeat;
     return (
       <TouchableOpacity
         style={[styles.seat, seatStyle]}
-        disabled={item.status === "occupied"}
-        onPress={() => toggleSeat(item.id)}
+        disabled={seat.status === false}
+        onPress={() => toggleSeat(seat.seat_location)}
       >
-        <Text style={styles.seatText}>{item.id}</Text>
+        <Text style={styles.seatText}>{seat.seat_location}</Text>
       </TouchableOpacity>
     );
   };
@@ -54,7 +74,7 @@ const SeatSelectionScreen = ({ navigation }) => {
           <Ionicons name="arrow-back" size={24} color="black" />
         </TouchableOpacity>
 
-        <Text style={styles.headerTitle}>Cosmos 1</Text>
+        <Text style={styles.headerTitle}>{theater_name}</Text>
       </View>
 
       {/* Seat Screen Image Placeholder */}
@@ -63,13 +83,20 @@ const SeatSelectionScreen = ({ navigation }) => {
       </View>
 
       {/* Seat Selection Area */}
-      <FlatList
-        data={seats}
-        renderItem={renderSeat}
-        keyExtractor={(item) => item.id}
-        numColumns={10}
-        contentContainerStyle={styles.seatContainer}
-      />
+      <View style={{ flex: 1, marginHorizontal: 16 }}>
+        <FlatList
+          data={screenings.screening.seats}
+          renderItem={renderSeat}
+          keyExtractor={(item) => item.seat_location}
+          numColumns={10}
+          contentContainerStyle={{
+            flexWrap: "wrap",
+            justifyContent: "center",
+            paddingBottom: 16
+          }}
+          showsHorizontalScrollIndicator={false}
+        />
+      </View>
 
       {/* Legend */}
       <View style={styles.legend}>
@@ -90,8 +117,8 @@ const SeatSelectionScreen = ({ navigation }) => {
       {/* Footer */}
       <View style={styles.footer}>
         <View style={styles.movieInfo}>
-          <Text style={styles.movieTitle}>Venom: The Last Dance</Text>
-          <Text>19:15 - 21:04 | Wed, 15/11/2024</Text>
+          <Text style={styles.movieTitle}>{movie.movie_name}</Text>
+          <Text>{`${formatTime(screenings.screening.screening_time)} - ${formatTime(screenings.screening.end_time)} | ${getDayOfWeek(screenings.screening.screening_time)}, ${getFormattedDate(screenings.screening.screening_time)}`}</Text>
         </View>
         <View style={styles.totalContainer}>
           <View style={styles.priceContainer}>
@@ -143,8 +170,8 @@ const styles = StyleSheet.create({
     justifyContent: "center",
   },
   seat: {
-    width: 32,
-    height: 32,
+    width: 28,
+    height: 28,
     margin: 4,
     justifyContent: "center",
     alignItems: "center",

@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import {
   View,
   Text,
@@ -8,27 +8,29 @@ import {
   Image,
 } from "react-native";
 import cinemaApi from "../cinemaApi"
+import SeatProductContext from "../contexts/SeatProductContext"
+import { AuthContext } from "../contexts/AuthContext";
 
 const ProductListScreen = () => {
-  const [products, setProducts] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
 
-  // Lấy dữ liệu từ API khi màn hình được load
+  const { currentUser } = useContext(AuthContext)
+  const { seatProduct, dispatchSeatProduct } = useContext(SeatProductContext)
+  const { products, chosenProducts } = seatProduct
+
   useEffect(() => {
-    cinemaApi
-      .get("/product/products") // API để lấy danh sách sản phẩm
-      .then((response) => {
-        setProducts(response.data);
-        setLoading(false);
-      })
-      .catch((err) => {
-        setError(err.message);
-        setLoading(false);
-      });
-  }, []);
+    async function fetchProducts() {
+      try {
+        dispatchSeatProduct({type: "FETCH_PRODUCTS_PENDING"})
+        const response = await cinemaApi.get(`/product/products`, { headers: { Authorization: `Bearer ${currentUser.token}` }})
+        dispatchSeatProduct({type: "FETCH_PRODUCTS_SUCCESS", payload: response.data})
+        console.log(response.data)
+      } catch (error) {
+        dispatchScreenings({type: "FETCH_PRODUCTS_FAILURE", error})
+      }
+    }
+    fetchProducts()
+  }, [])
 
-  // Hiển thị một item trong FlatList
   const renderItem = ({ item }) => (
     <View style={styles.productItem}>
       <Image

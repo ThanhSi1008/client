@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useContext } from "react";
 import {
   View,
   Text,
@@ -9,53 +9,121 @@ import {
 } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import { SafeAreaView } from "react-native-safe-area-context";
+import SeatProductContext from "../contexts/SeatProductContext"; // Adjust path as needed
 
 const items = [
-  { id: "1", name: "Popcorn Large", price: 59, image: "https://res.cloudinary.com/dlrtv3tla/image/upload/v1731620477/Pngtree_popcorn_border_clipart_this_image_11054087_llaq92.png" },
-  { id: "2", name: "ocaCola", price: 59, image: "https://res.cloudinary.com/dlrtv3tla/image/upload/v1731620566/favpng_the-coca-cola-company-soft-drink-pepsi_uveehb.png" },
-  { id: "3", name: "Combo Popcorn & Drink", price: 59, image: "https://res.cloudinary.com/dlrtv3tla/image/upload/v1731621027/97cathay_cineplexes_q106rh.jpg" },
+  {
+    id: "1",
+    name: "Popcorn Large",
+    price: 19,
+    image:
+      "https://res.cloudinary.com/dlrtv3tla/image/upload/v1731620477/Pngtree_popcorn_border_clipart_this_image_11054087_llaq92.png",
+  },
+  {
+    id: "2",
+    name: "CocaCola",
+    price: 19,
+    image:
+      "https://res.cloudinary.com/dlrtv3tla/image/upload/v1731620566/favpng_the-coca-cola-company-soft-drink-pepsi_uveehb.png",
+  },
+  {
+    id: "3",
+    name: "Combo Popcorn & Drink",
+    price: 29,
+    image:
+      "https://res.cloudinary.com/dlrtv3tla/image/upload/v1731621027/97cathay_cineplexes_q106rh.jpg",
+  },
 ];
 
 const ProductScreen = ({ navigation }) => {
-  const [quantities, setQuantities] = useState({ 1: 0, 2: 0, 3: 0 });
+  const { seatProduct, dispatchSeatProduct } = useContext(SeatProductContext);
 
   const handleIncrement = (id) => {
-    setQuantities((prev) => ({ ...prev, [id]: prev[id] + 1 }));
+    const existingProduct = seatProduct.chosenProducts.find(
+      (product) => product.id === id
+    );
+  
+    if (existingProduct) {
+      dispatchSeatProduct({
+        type: "SET_CHOSEN_PRODUCTS",
+        payload: seatProduct.chosenProducts.map((product) =>
+          product.id === id
+            ? { ...product, quantity: product.quantity + 1 }
+            : product
+        ),
+      });
+    } else {
+      const newItem = items.find((item) => item.id === id);
+      dispatchSeatProduct({
+        type: "SET_CHOSEN_PRODUCTS",
+        payload: [
+          ...seatProduct.chosenProducts,
+          { ...newItem, quantity: 1 },
+        ],
+      });
+    }
   };
-
+  
   const handleDecrement = (id) => {
-    setQuantities((prev) => ({ ...prev, [id]: Math.max(0, prev[id] - 1) }));
+    const existingProduct = seatProduct.chosenProducts.find(
+      (product) => product.id === id
+    );
+  
+    if (existingProduct && existingProduct.quantity > 1) {
+      dispatchSeatProduct({
+        type: "SET_CHOSEN_PRODUCTS",
+        payload: seatProduct.chosenProducts.map((product) =>
+          product.id === id
+            ? { ...product, quantity: product.quantity - 1 }
+            : product
+        ),
+      });
+    } else {
+      dispatchSeatProduct({
+        type: "SET_CHOSEN_PRODUCTS",
+        payload: seatProduct.chosenProducts.filter(
+          (product) => product.id !== id
+        ),
+      });
+    }
   };
-
-  const totalPrice = items.reduce(
-    (total, item) => total + item.price * quantities[item.id],
+  
+  const totalPrice = seatProduct.chosenProducts.reduce(
+    (total, product) =>
+      total + product.price * (product.quantity || 0),
     0
   );
 
-  const renderItem = ({ item }) => (
-    <View style={styles.itemContainer}>
-      <Image source={{uri: item.image}} style={styles.itemImage} />
-      <View style={styles.itemDetails}>
-        <Text style={styles.itemName}>{item.name}</Text>
-        <Text style={styles.itemPrice}>${item.price}</Text>
-        <View style={styles.quantityContainer}>
-          <TouchableOpacity
-            onPress={() => handleDecrement(item.id)}
-            style={styles.quantityButton}
-          >
-            <Text style={styles.quantityButtonText}>-</Text>
-          </TouchableOpacity>
-          <Text style={styles.quantityText}>{quantities[item.id]}</Text>
-          <TouchableOpacity
-            onPress={() => handleIncrement(item.id)}
-            style={styles.quantityButton}
-          >
-            <Text style={styles.quantityButtonText}>+</Text>
-          </TouchableOpacity>
+  const renderItem = ({ item }) => {
+    const quantity =
+      seatProduct.chosenProducts.find((product) => product.id === item.id)
+        ?.quantity || 0;
+
+    return (
+      <View style={styles.itemContainer}>
+        <Image source={{ uri: item.image }} style={styles.itemImage} />
+        <View style={styles.itemDetails}>
+          <Text style={styles.itemName}>{item.name}</Text>
+          <Text style={styles.itemPrice}>${item.price}</Text>
+          <View style={styles.quantityContainer}>
+            <TouchableOpacity
+              onPress={() => handleDecrement(item.id)}
+              style={styles.quantityButton}
+            >
+              <Text style={styles.quantityButtonText}>-</Text>
+            </TouchableOpacity>
+            <Text style={styles.quantityText}>{quantity}</Text>
+            <TouchableOpacity
+              onPress={() => handleIncrement(item.id)}
+              style={styles.quantityButton}
+            >
+              <Text style={styles.quantityButtonText}>+</Text>
+            </TouchableOpacity>
+          </View>
         </View>
       </View>
-    </View>
-  );
+    );
+  };
 
   return (
     <SafeAreaView style={styles.container}>
@@ -188,5 +256,6 @@ const styles = StyleSheet.create({
     fontWeight: "bold",
   },
 });
+
 
 export default ProductScreen;

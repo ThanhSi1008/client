@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useContext, useState } from "react";
 import {
   View,
   Text,
@@ -10,35 +10,52 @@ import {
 } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import { SafeAreaView } from "react-native-safe-area-context";
+import { MovieContext } from "../contexts/MovieContext"
+import ScreeningContext from "../contexts/ScreeningContext"
+import SeatProductContext from "../contexts/SeatProductContext";
+import cinemaApi from "../cinemaApi"
+import { AuthContext } from "../contexts/AuthContext"
 
-const foodItems = [
-  {
-    id: "1",
-    name: "Popcorn",
-    price: 59,
-    quantity: 2,
-    image:
-      "https://res.cloudinary.com/dlrtv3tla/image/upload/v1731620477/Pngtree_popcorn_border_clipart_this_image_11054087_llaq92.png",
-  },
-  {
-    id: "2",
-    name: "CocaCola",
-    price: 59,
-    quantity: 2,
-    image:
-      "https://res.cloudinary.com/dlrtv3tla/image/upload/v1731620566/favpng_the-coca-cola-company-soft-drink-pepsi_uveehb.png",
-  },
-];
+function formatTime(dateString) {
+  const date = new Date(dateString);
+  if (isNaN(date)) {
+    throw new Error("Invalid date string");
+  }
+  const hours = String(date.getUTCHours()).padStart(2, "0");
+  const minutes = String(date.getUTCMinutes()).padStart(2, "0");
+  return `${hours}:${minutes}`;
+}
+
+function getDayOfWeek(dateString) {
+  const daysOfWeek = ["SUN", "MON", "TUE", "WED", "THU", "FRI", "SAT"];
+  const date = new Date(dateString);
+  return daysOfWeek[date.getUTCDay()]; // Get the day of the week in UTC
+}
+
+function getFormattedDate(dateString) {
+  const date = new Date(dateString);
+  const day = String(date.getUTCDate()).padStart(2, "0");
+  const month = String(date.getUTCMonth() + 1).padStart(2, "0");
+  const year = date.getUTCFullYear();
+  return `${day}/${month}/${year}`; // Format as DD/MM/YYYY
+}
 
 const TicketConfirmationScreen = ({ navigation }) => {
+  const { currentUser } = useContext(AuthContext)
+  const { movie: selectedMovie } = useContext(MovieContext)
+  const { screenings } = useContext(ScreeningContext)
+  const { seatProduct } = useContext(SeatProductContext)
+  const { chosenProducts: foodItems } = seatProduct
+  const [isLoading, setLoading] = useState(false);
   const movie = {
-    title: "Venom: The Last Dance",
-    time: "19:15 ~ 21:04, Wed, 15/11/2024",
-    room: "Screen 4",
-    seat: "A06",
-    theater: "Cosmos 1",
+    title: selectedMovie.movie_name,
+    time: `${formatTime(screenings.screening.screening_time)} - ${formatTime(screenings.screening.end_time)} | ${getDayOfWeek(screenings.screening.screening_time)}, ${getFormattedDate(screenings.screening.screening_time)}`,
+    room: screenings.screening.room.room_name,
+    seat: seatProduct.seats.join(","),
+    theater: screenings.theater.theater_name,
     address: "6925 Hollywood Blvd, Hollywood, CA 90028",
-    price: 59,
+    address: `${screenings.theater.address.street}, ${screenings.theater.address.city}, ${screenings.theater.address.state}, ${screenings.theater.address.zipcode}`,
+    price: screenings.screening.ticket_price * seatProduct.seats.length,
     image:
       "https://res.cloudinary.com/dlrtv3tla/image/upload/v1731529082/image_20_nlxxou.png",
   };
@@ -62,7 +79,37 @@ const TicketConfirmationScreen = ({ navigation }) => {
 
   const handleCheckout = () => {
     navigation.navigate("PaymentMethod", { movie, foodItems, grandTotal });
+  
+    // Update the seatings in the screening
+    const seat_locations = seatProduct.seats;
+    const screening_id = screenings.screening.screening_id;
+  
+    const updateSeats = async () => {
+      try {
+        setLoading(true);
+        const response = await cinemaApi.put(
+          "/screenings/update-seats",
+          { 
+            screening_id, 
+            seat_locations
+          },
+          {
+            headers: {
+              Authorization: `Bearer ${currentUser.token}`,
+            },
+          }
+        );
+        console.log(response.data);
+      } catch (err) {
+        console.log(err);
+      } finally {
+        setLoading(false);
+      }
+    };
+  
+    updateSeats();
   };
+  
 
   return (
     <SafeAreaView style={styles.container}>
