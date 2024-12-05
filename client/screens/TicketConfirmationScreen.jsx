@@ -41,12 +41,11 @@ function getFormattedDate(dateString) {
 }
 
 const TicketConfirmationScreen = ({ navigation }) => {
-  const { currentUser } = useContext(AuthContext)
   const { movie: selectedMovie } = useContext(MovieContext)
   const { screenings } = useContext(ScreeningContext)
   const { seatProduct } = useContext(SeatProductContext)
   const { chosenProducts: foodItems } = seatProduct
-  const [isLoading, setLoading] = useState(false);
+  
   const movie = {
     title: selectedMovie.movie_name,
     time: `${formatTime(screenings.screening.screening_time)} - ${formatTime(screenings.screening.end_time)} | ${getDayOfWeek(screenings.screening.screening_time)}, ${getFormattedDate(screenings.screening.screening_time)}`,
@@ -79,35 +78,6 @@ const TicketConfirmationScreen = ({ navigation }) => {
 
   const handleCheckout = () => {
     navigation.navigate("PaymentMethod", { movie, foodItems, grandTotal });
-  
-    // Update the seatings in the screening
-    const seat_locations = seatProduct.seats;
-    const screening_id = screenings.screening.screening_id;
-  
-    const updateSeats = async () => {
-      try {
-        setLoading(true);
-        const response = await cinemaApi.put(
-          "/screenings/update-seats",
-          { 
-            screening_id, 
-            seat_locations
-          },
-          {
-            headers: {
-              Authorization: `Bearer ${currentUser.token}`,
-            },
-          }
-        );
-        console.log(response.data);
-      } catch (err) {
-        console.log(err);
-      } finally {
-        setLoading(false);
-      }
-    };
-  
-    updateSeats();
   };
   
 

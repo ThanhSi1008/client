@@ -10,3 +10,4 @@ server/
 .vscode/
 build/
 dist/
+.vercel

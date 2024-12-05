@@ -1,12 +1,56 @@
-import React from "react";
+import React, { useContext, useState } from "react";
 import { View, Text, TouchableOpacity, StyleSheet } from "react-native";
+import { AuthContext } from "../contexts/AuthContext"
+import ScreeningContext from "../contexts/ScreeningContext"
+import SeatProductContext from "../contexts/SeatProductContext";
+import cinemaApi from "../cinemaApi"
 
 const PaymentMethodsScreen = ({ navigation, route }) => {
   const { movie, foodItems, grandTotal } = route.params;
+  const { currentUser } = useContext(AuthContext)
+  const { screenings } = useContext(ScreeningContext)
+  const { seatProduct } = useContext(SeatProductContext)
+  const [isLoading, setLoading] = useState(false);
 
   const handlePayment = (method) => {
-    // Xử lý logic thanh toán ở đây (gửi đến server hoặc tiếp tục đến màn hình hóa đơn)
-    navigation.navigate("Invoice", { movie, foodItems, grandTotal, method });
+    
+    // Update seatings in the screening
+    setLoading(true)
+    const seat_locations = seatProduct.seats;
+    const screening_id = screenings.screening.screening_id;
+
+    console.log(seat_locations)
+    console.log(screening_id)
+  
+    const updateSeats = async () => {
+      try {
+        setLoading(true);
+        const response = await cinemaApi.put(
+          "/screenings/update-seats",
+          { 
+            screening_id, 
+            seat_locations
+          },
+          {
+            headers: {
+              Authorization: `Bearer ${currentUser.token}`,
+            },
+          }
+        );
+        console.log(response.data);
+        navigation.navigate("Invoice", { movie, foodItems, grandTotal, method });
+      } catch (err) {
+        console.log(err);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    updateSeats()
+
+    // Create new order 
+    
+    
   };
 
   return (
