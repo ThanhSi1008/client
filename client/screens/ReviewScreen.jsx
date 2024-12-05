@@ -1,11 +1,21 @@
-import React, { useState } from 'react';
+import React, { useState, useContext } from 'react';
 import { View, Text, TextInput, TouchableOpacity, Image } from 'react-native';
 import { FontAwesome } from '@expo/vector-icons';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import { Ionicons } from "@expo/vector-icons";
+import { MovieContext } from '../contexts/MovieContext'
+import cinemaApi from "../cinemaApi";
+import { AuthContext } from '../contexts/AuthContext'
+import { useNavigation } from '@react-navigation/native'
 
 const WriteReviewPage = () => {
+  const navigation = useNavigation()
+  const { currentUser } = useContext(AuthContext)
   const [rating, setRating] = useState(8); // Default rating
   const [reviewText, setReviewText] = useState('');
+  const { movie } = useContext(MovieContext)
+
+  const [ isLoading, setLoading ] = useState(false)
 
   const handleRating = (selectedRating) => {
     setRating(selectedRating);
@@ -15,17 +25,42 @@ const WriteReviewPage = () => {
     console.log('Rating:', rating);
     console.log('Review:', reviewText);
     // Add review submission logic here
+    const addReviewSubmisison = async () => {
+      try {
+        setLoading(true)
+        await cinemaApi.post(`/movies/${movie._id}/reviews`, {
+          rating,
+          reviewText
+        }, {
+          headers: {
+            Authorization: `Bearer ${currentUser.token}`
+          }
+        })
+        navigation.goBack()
+      } catch (err) {
+        console.error(
+          "Create Reviews Error:",
+          err.response ? err.response.data : err.message
+        )
+      } finally {
+        setLoading(false)
+      }
+    }
+    addReviewSubmisison()
   };
 
   return (
     <SafeAreaView style={{ flex: 1, padding: 20, backgroundColor: '#fff' }}>
-      <TouchableOpacity style={{ marginBottom: 10 }}>
-        <Text style={{ color: 'black', fontSize: 16 }}>Back</Text>
-      </TouchableOpacity>
+      <View style={{ flexDirection: "row", alignItems: "center", marginBottom: 16 }}>
+        <TouchableOpacity onPress={() => navigation.goBack()}>
+          <Ionicons name="arrow-back" size={24} color="black" />
+        </TouchableOpacity>
+        <Text style={{ fontSize: 20, fontWeight: "bold", marginLeft: 8 }}>Movie Info</Text>
+      </View>
       <View style={{ flexDirection: 'row', alignItems: 'center', marginBottom: 20 }}>
         <Image
-          source={{ uri: 'https://via.placeholder.com/100' }} // Replace with your movie image URL
-          style={{ width: 50, height: 70, marginRight: 10 }}
+          source={{ uri: movie.movie_poster }} // Replace with your movie image URL
+          style={{ width: 50, height: 70, marginRight: 10, borderRadius: 8 }}
         />
         <Text style={{ fontSize: 18, fontWeight: 'bold' }}>Venom: The Last Dance</Text>
       </View>

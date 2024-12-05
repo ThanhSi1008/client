@@ -1,4 +1,5 @@
-import React, { useState, useEffect, useContext } from "react";
+import React, { useState, useContext } from "react";
+import { useFocusEffect } from '@react-navigation/native';
 import {
   View,
   Text,
@@ -33,12 +34,14 @@ const MovieInfoScreen = ({ route, navigation }) => {
   } = useContext(MovieContext);
   const [isModalVisible, setModalVisible] = useState(false);
 
-  useEffect(() => {
-    if (movieId) {
-      fetchMovieById(movieId);
-      fetchReviewsByMovieId(movieId);
-    }
-  }, [movieId]);
+  useFocusEffect(
+    React.useCallback(() => {
+      if (movieId) {
+        fetchMovieById(movieId);
+        fetchReviewsByMovieId(movieId);
+      }
+    }, [movieId])
+  );
 
   const toggleModal = () => {
     setModalVisible(!isModalVisible);
