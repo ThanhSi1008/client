@@ -1,4 +1,4 @@
-import React, { useContext } from "react";
+import React, { useContext, useEffect } from "react";
 import {
   View,
   Text,
@@ -10,11 +10,29 @@ import {
 import { Ionicons } from "@expo/vector-icons";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { AuthContext } from "../contexts/AuthContext"
+import cinemaApi from "../cinemaApi"
+import OrderContext from "../contexts/OrderContext"
+import Loading from "../components/Loading"
 
 const ProfileScreen = ({ navigation }) => {
   const { currentUser } = useContext(AuthContext)
+  const { orders, dispatchOrders } = useContext(OrderContext)
 
   console.log(currentUser)
+
+  useEffect(() => {
+    async function fetchScreenings() {
+      try {
+        dispatchOrders({type: "FETCH_ORDERS_PENDING"})
+        const response = await cinemaApi.get(`/orders`, { headers: { Authorization: `Bearer ${currentUser.token}` }})
+        dispatchOrders({type: "FETCH_ORDERS_SUCCESS", payload: response.data})
+      } catch (error) {
+        console.log(error)
+        dispatchOrders({type: "FETCH_ORDERS_FAILURE", error})
+      }
+    }
+    fetchScreenings()
+  }, [])
 
   const recentBookings = [
     {
@@ -31,8 +49,15 @@ const ProfileScreen = ({ navigation }) => {
     },
   ];
 
+  if (orders.isLoading) {
+    return <Loading/>
+  }
+
   return (
     <SafeAreaView style={styles.container}>
+      <TouchableOpacity onPress={() => { console.log(orders.orders) }}>
+        <Text>Hello</Text>
+      </TouchableOpacity>
       <ScrollView>
         {/* Header */}
         <View style={styles.header}>

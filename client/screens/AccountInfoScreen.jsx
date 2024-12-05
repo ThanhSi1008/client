@@ -20,7 +20,7 @@ const AccountInfoScreen = () => {
   return (
     <SafeAreaView style={{ flex: 1, backgroundColor: "#fff" }}>
       <ScrollView style={{ flex: 1, padding: 20 }}>
-        <View style={{ flexDirection: "row", alignItems: "center", marginVertical: 40 }}>
+        <View style={{ flexDirection: "row", alignItems: "center", marginBottom: 30 }}>
           <TouchableOpacity onPress={() => navigation.goBack()}>
             <Ionicons name="arrow-back" size={24} color="black" />
           </TouchableOpacity>

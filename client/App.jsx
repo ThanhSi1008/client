@@ -20,6 +20,7 @@ import ReviewScreen from "./screens/ReviewScreen";
 import PaymentMethodsScreen from "./screens/PaymentMethodsScreen";
 import { ScreeningProvider } from "./contexts/ScreeningContext"
 import { SeatProductProvider } from "./contexts/SeatProductContext"
+import { OrderProvider } from "./contexts/OrderContext"
 
 const Stack = createStackNavigator();
 
@@ -30,6 +31,7 @@ export default function App() {
         <MovieProvider>
           <ScreeningProvider>
             <SeatProductProvider>
+              <OrderProvider>
               <NavigationContainer>
                 <Stack.Navigator
                   initialRouteName="Login"
@@ -61,6 +63,7 @@ export default function App() {
                   />
                 </Stack.Navigator>
               </NavigationContainer>
+              </OrderProvider>
             </SeatProductProvider>
           </ScreeningProvider>
         </MovieProvider>

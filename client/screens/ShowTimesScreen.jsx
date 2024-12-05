@@ -79,7 +79,7 @@ const ShowTimesScreen = ({ navigation }) => {
         <TouchableOpacity onPress={() => navigation.goBack()}>
           <Ionicons name="arrow-back" size={24} color="black" />
         </TouchableOpacity>
-        <Text style={{ fontSize: 20, fontWeight: "bold", marginLeft: 8 }}>Venom: The Last Dance</Text>
+        <Text style={{ fontSize: 20, fontWeight: "bold", marginLeft: 8 }}>{movie.movie_name}</Text>
       </View>
 
       <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={{ paddingHorizontal: 8 }}>

@@ -45,6 +45,8 @@ const SeatProductProvider = ({ children }) => {
       case "RESET":
         return {
           ...state,
+          seats: [],
+          chosenProducts: [],
           isLoading: false,
           isError: false,
           isSuccess: false,
