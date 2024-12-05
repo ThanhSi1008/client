@@ -21,6 +21,7 @@ import PaymentMethodsScreen from "./screens/PaymentMethodsScreen";
 import { ScreeningProvider } from "./contexts/ScreeningContext"
 import { SeatProductProvider } from "./contexts/SeatProductContext"
 import { OrderProvider } from "./contexts/OrderContext"
+import OrderDetailsScreen from "./screens/OrderDetailsScreen"
 
 const Stack = createStackNavigator();
 
@@ -61,6 +62,7 @@ export default function App() {
                     name="PaymentMethod"
                     component={PaymentMethodsScreen}
                   />
+                  <Stack.Screen name="OrderDetails" component={OrderDetailsScreen} />
                 </Stack.Navigator>
               </NavigationContainer>
               </OrderProvider>

@@ -12,7 +12,6 @@ import { SafeAreaView } from "react-native-safe-area-context";
 
 const InvoiceScreen = ({ route, navigation }) => {
   const { movie, foodItems, grandTotal } = route.params;
-
   // Generate QR data (you can modify it based on your needs)
   const qrData = {
     movieTitle: movie.title,

@@ -14,6 +14,31 @@ import cinemaApi from "../cinemaApi"
 import OrderContext from "../contexts/OrderContext"
 import Loading from "../components/Loading"
 
+function formatTime(dateString) {
+  const date = new Date(dateString);
+  if (isNaN(date)) {
+    throw new Error("Invalid date string");
+  }
+  const hours = String(date.getUTCHours()).padStart(2, "0");
+  const minutes = String(date.getUTCMinutes()).padStart(2, "0");
+  return `${hours}:${minutes}`;
+}
+
+function getDayOfWeek(dateString) {
+  const daysOfWeek = ["SUN", "MON", "TUE", "WED", "THU", "FRI", "SAT"];
+  const date = new Date(dateString);
+  return daysOfWeek[date.getUTCDay()]; // Get the day of the week in UTC
+}
+
+function getFormattedDate(dateString) {
+  const date = new Date(dateString);
+  const day = String(date.getUTCDate()).padStart(2, "0");
+  const month = String(date.getUTCMonth() + 1).padStart(2, "0");
+  const year = date.getUTCFullYear();
+  return `${day}/${month}/${year}`; // Format as DD/MM/YYYY
+}
+
+
 const ProfileScreen = ({ navigation }) => {
   const { currentUser } = useContext(AuthContext)
   const { orders, dispatchOrders } = useContext(OrderContext)
@@ -25,7 +50,7 @@ const ProfileScreen = ({ navigation }) => {
       try {
         dispatchOrders({type: "FETCH_ORDERS_PENDING"})
         const response = await cinemaApi.get(`/orders`, { headers: { Authorization: `Bearer ${currentUser.token}` }})
-        dispatchOrders({type: "FETCH_ORDERS_SUCCESS", payload: response.data})
+        dispatchOrders({type: "FETCH_ORDERS_SUCCESS", payload: response.data.orders})
       } catch (error) {
         console.log(error)
         dispatchOrders({type: "FETCH_ORDERS_FAILURE", error})
@@ -49,15 +74,32 @@ const ProfileScreen = ({ navigation }) => {
     },
   ];
 
+  function handleOrderDetailsPressed(order) {
+    const movie = {
+      title: order.movie_name,
+      time: `${formatTime(order.screening_time)} - ${formatTime(order.end_time)} | ${getDayOfWeek(order.screening_time)}, ${getFormattedDate(order.screening_time)}`,
+      room: order.room_name,
+      seat: order.seats.map(seat => seat.seat_location).join(","),
+      theater: order.theater_name,
+      address: `${order.address.street}, ${order.address.city}, ${order.address.state}, ${order.address.zipcode}`,
+      price: order.ticket_price * order.seats.length,
+    };
+    const foodItems = order.products.map(product => ({
+      name: product.product.name,
+      price: product.product.price,
+      quantity: product.quantity
+    }))
+    const grandTotal = order.total
+
+    navigation.navigate("OrderDetails", { movie, foodItems, grandTotal });
+  }
+
   if (orders.isLoading) {
     return <Loading/>
   }
 
   return (
     <SafeAreaView style={styles.container}>
-      <TouchableOpacity onPress={() => { console.log(orders.orders) }}>
-        <Text>Hello</Text>
-      </TouchableOpacity>
       <ScrollView>
         {/* Header */}
         <View style={styles.header}>
@@ -100,16 +142,16 @@ const ProfileScreen = ({ navigation }) => {
         {/* Booking History */}
         <View style={styles.section}>
           <Text style={styles.sectionTitle}>Booking History</Text>
-          {recentBookings.map((booking) => (
-            <View key={booking.id} style={styles.bookingHistoryItem}>
+          {orders.orders.map((order) => (
+            <TouchableOpacity onPress={() => handleOrderDetailsPressed(order)} key={order.order_id} style={styles.bookingHistoryItem}>
               <View>
-                <Text style={styles.movieTitle}>{booking.movie}</Text>
+                <Text style={styles.movieTitle}>{order.movie_name}</Text>
                 <Text style={styles.bookingDate}>
-                  {booking.date} at {booking.time}
+                  {getFormattedDate(order.order_date)} at {formatTime(order.order_date)}
                 </Text>
               </View>
               <Ionicons name="chevron-forward" size={20} color="gray" />
-            </View>
+            </TouchableOpacity>
           ))}
         </View>
 
