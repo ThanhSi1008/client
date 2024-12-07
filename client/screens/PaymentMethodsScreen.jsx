@@ -8,7 +8,7 @@ import cinemaApi from "../cinemaApi";
 const PaymentMethodsScreen = ({ navigation, route }) => {
   const { movie, foodItems, grandTotal } = route.params;
   const { currentUser } = useContext(AuthContext);
-  const { screenings } = useContext(ScreeningContext);
+  const { screenings, dispatchScreenings } = useContext(ScreeningContext);
   const { seatProduct, dispatchSeatProduct } = useContext(SeatProductContext);
   const [isLoading, setLoading] = useState(false);
 
@@ -92,7 +92,8 @@ const PaymentMethodsScreen = ({ navigation, route }) => {
       console.log("Order created successfully");
 
       dispatchSeatProduct({ type: "RESET" })
-
+      dispatchScreenings({ tyep: "RESET"})
+      
       // Step 3: Navigate to Invoice
       navigation.navigate("Invoice", { movie, foodItems, grandTotal, method });
     } catch (err) {

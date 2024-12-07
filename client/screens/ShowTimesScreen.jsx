@@ -101,14 +101,14 @@ const ShowTimesScreen = ({ navigation }) => {
               data={screenings.screenings}
               keyExtractor={(item) => item.theater_name}
               renderItem={({ item: screeningTheater }) => (
-                <View style={{ backgroundColor: "#f0f0f0", marginVertical: 8, padding: 16, borderRadius: 10, marginHorizontal: 16 }}>
+                <View style={{ backgroundColor: "#dfdfdf", marginVertical: 8, padding: 16, borderRadius: 10, marginHorizontal: 16 }}>
                   <Text style={{ fontSize: 18, fontWeight: "bold", color: "#333" }}>{screeningTheater.theater_name}</Text>
                   <Text style={{ fontSize: 14, color: "#888", marginVertical: 4 }}>{`${screeningTheater.address.street}, ${screeningTheater.address.city}, ${screeningTheater.address.state} ${screeningTheater.address.country}`}</Text>
                   <View style={{ flexDirection: "row", marginTop: 8 }}>
                     {screeningTheater.screenings.map((screening, index) => (
-                      <View key={index} style={{ backgroundColor: "#e0e0e0", paddingVertical: 6, paddingHorizontal: 12, borderRadius: 8, marginRight: 8 }}>
+                      <View key={index} style={{ backgroundColor: "#b22", paddingVertical: 6, paddingHorizontal: 12, borderRadius: 8, marginRight: 8 }}>
                         <TouchableOpacity onPress={() => handleScreeningPressed(screening, {theater_name: screeningTheater.theater_name, address: screeningTheater.address})}>
-                          <Text style={{ fontSize: 16, fontWeight: "bold", color: "#333" }}>{`${formatTime(screening.screening_time)} - ${formatTime(screening.end_time)}`}</Text>
+                          <Text style={{ fontSize: 16, fontWeight: "bold", color: "white" }}>{`${formatTime(screening.screening_time)} - ${formatTime(screening.end_time)}`}</Text>
                         </TouchableOpacity>
                       </View>
                     ))}

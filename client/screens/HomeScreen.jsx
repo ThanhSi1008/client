@@ -89,17 +89,17 @@ const HomeScreen = ({ navigation }) => {
                   <View
                     style={{
                       flexDirection: "row",
-                      justifyContent: "space-between",
+                      gap: 8,
                       marginHorizontal: 12,
                     }}
                   >
                     <Image
                       source={{ uri: item.movie_poster }}
-                      style={{ width: "28%", height: 120 }}
+                      style={{ width: 40, height: 40, borderRadius: 8 }}
                     />
                     <View style={{ justifyContent: "space-evenly" }}>
-                      <Text>{item.movie_name}</Text>
-                      <Text>{new Date(item.release_date).toDateString()}</Text>
+                      <Text style={{ fontWeight: "bold" }}>{item.movie_name}</Text>
+                      <Text style={{ color: "#888", fontSize: 12}}>{new Date(item.release_date).toDateString()}</Text>
                     </View>
                   </View>
                 </TouchableOpacity>
@@ -167,8 +167,8 @@ const styles = StyleSheet.create({
   },
   movieItem: {
     padding: 10,
-    borderBottomWidth: 1,
-    borderBottomColor: "#ccc",
+    // borderBottomWidth: 1,
+    // borderBottomColor: "#b22222",
   },
   movieList: {
     marginTop: 10,

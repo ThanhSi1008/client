@@ -4,7 +4,7 @@ const ScreeningContext = createContext()
 
 const ScreeningProvider = ({ children }) => {
   const initialState = {
-    screenings: null,
+    screenings: [],
     screening: null,
     theater: null,
     isLoading: false,
@@ -32,7 +32,8 @@ const ScreeningProvider = ({ children }) => {
           isError: true,
           message: "Failed to fetch screenings"
         }
-      case "SET_SCREENING": 
+      case "SET_SCREENING":
+        console.log(action.payload) 
         return {
           ...state,
           screening: action.payload
@@ -45,6 +46,9 @@ const ScreeningProvider = ({ children }) => {
       case "RESET":
         return {
           ...state,
+          screenings: [],
+          screening: null,
+          theater: null,
           isLoading: false,
           isError: false,
           isSuccess: false,

@@ -46,10 +46,10 @@ const SeatSelectionScreen = ({ route, navigation }) => {
   const { seats: selectedSeats } = seatProduct
   // const [selectedSeats, setSelectedSeats] = useState([]);
   const ticketPrice = screenings.screening.ticket_price;
+  // console.log(screenings.screening)
 
   const toggleSeat = (seatLocation) => {
     dispatchSeatProduct({ type: "SET_SEATS", payload: selectedSeats.includes(seatLocation) ? selectedSeats.filter((location) => location !== seatLocation) : [...selectedSeats, seatLocation] })
-    // setSelectedSeats((prevSelectedSeats) => prevSelectedSeats.includes(seatLocation) ? prevSelectedSeats.filter((location) => location !== seatLocation) : [...prevSelectedSeats, seatLocation] );
   };
 
   const renderSeat = ({ item: seat }) => {
